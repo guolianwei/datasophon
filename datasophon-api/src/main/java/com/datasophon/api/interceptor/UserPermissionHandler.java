@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +27,9 @@ public class UserPermissionHandler implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (handler instanceof ResourceHttpRequestHandler) {
+            return true;
+        }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         UserPermission annotation = handlerMethod.getMethod().getAnnotation(UserPermission.class);
         if (Objects.nonNull(annotation)) {
@@ -33,11 +37,11 @@ public class UserPermissionHandler implements HandlerInterceptor {
             Map<String, String[]> parameterMap = request.getParameterMap();
             if (Objects.nonNull(authUser) && !SecurityUtils.isAdmin(authUser)) {
                 logger.info("step into authrization");
-                if(parameterMap.containsKey("clusterId")){
+                if (parameterMap.containsKey("clusterId")) {
                     logger.info("find clusterId");
                     String[] clusterIds = parameterMap.get("clusterId");
-                    if(clusterUserService.isClusterManager(authUser.getId(),clusterIds[0])){
-                        logger.info("{} is cluster manager",authUser.getUsername());
+                    if (clusterUserService.isClusterManager(authUser.getId(), clusterIds[0])) {
+                        logger.info("{} is cluster manager", authUser.getUsername());
                         return true;
                     }
                 }

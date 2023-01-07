@@ -16,7 +16,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import scala.concurrent.duration.FiniteDuration;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
 
@@ -26,10 +28,11 @@ import java.util.concurrent.TimeUnit;
 
 import static akka.pattern.Patterns.ask;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.datasophon.*")
 @ServletComponentScan
 @ComponentScan("com.datasophon")
 @MapperScan("com.datasophon.dao")
+@EnableWebMvc
 public class DDHApplicationServer extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

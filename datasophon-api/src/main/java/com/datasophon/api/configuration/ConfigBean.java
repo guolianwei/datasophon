@@ -10,4 +10,11 @@ public class ConfigBean {
     @Value("${server.port}")
     private String serverPort;
 
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(String serverPort) {
+        this.serverPort = serverPort;
+    }
 }

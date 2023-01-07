@@ -7,6 +7,7 @@ import com.datasophon.api.service.AlertGroupService;
 import com.datasophon.api.service.ClusterAlertQuotaService;
 import com.datasophon.common.Constants;
 import com.datasophon.dao.entity.ClusterAlertQuota;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ import com.datasophon.common.utils.Result;
  */
 @RestController
 @RequestMapping("alert/group")
+@Api(tags = "AlertGroup")
 public class AlertGroupController {
     @Autowired
     private AlertGroupService alertGroupService;

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Exception Handler
  */
-@ControllerAdvice
+@ControllerAdvice(basePackages="com.datasophon.api.controller")
 @ResponseBody
 public class ApiExceptionHandler {
 

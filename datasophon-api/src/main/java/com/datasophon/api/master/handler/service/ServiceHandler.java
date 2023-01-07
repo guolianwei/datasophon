@@ -11,6 +11,13 @@ public abstract class ServiceHandler {
 
     private ServiceHandler next;
 
+    public ServiceHandler getNext() {
+        return next;
+    }
+
+    public void setNext(ServiceHandler next) {
+        this.next = next;
+    }
 
     public abstract ExecResult handlerRequest(ServiceRoleInfo serviceRoleInfo ) throws Exception;
 
