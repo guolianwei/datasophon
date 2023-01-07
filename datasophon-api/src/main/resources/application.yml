@@ -10,10 +10,10 @@ security:
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://10.1.4.110:3306/datasophon?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/datasophon?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
+    password: 123qwe
+    driver-class-name: com.mysql.cj.jdbc.Driver
 #json格式化全局配置
   jackson:
     time-zone: GMT+8

@@ -927,7 +927,7 @@ CREATE TABLE `t_ddh_frame_service`  (
   `decompress_package_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `sort_num` int(2) NULL DEFAULT NULL COMMENT '排序字段',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '集群框架版本服务表' ROW_FORMAT = COMPACT;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '集群框架版本服务表' ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_ddh_frame_service
