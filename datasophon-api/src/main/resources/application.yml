@@ -10,15 +10,17 @@ security:
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/datasophon?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/datasophon?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
     username: root
     password: 123qwe
     driver-class-name: com.mysql.cj.jdbc.Driver
     profiles:
     #    active: release
     active: dev
+  application:
+    name: Datasophon
 
-#json格式化全局配置
+  #json格式化全局配置
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
@@ -51,9 +53,10 @@ mybatis-plus:
     jdbc-type-for-null: 'null'
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 swagger:
-    enable: true
-    application-name: test
-    application-version: 1.0
-    application-description: Swagger3.x api info
+  enable: true
+  application-name: ${spring.application.name}
+  application-version: 1.0
+  application-description: springfox swagger 3.0整合Demo
+  try-host: http://localhost:${server.port}
 
 

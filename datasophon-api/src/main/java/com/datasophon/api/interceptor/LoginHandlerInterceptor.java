@@ -42,6 +42,7 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
         if (handler instanceof ResourceHttpRequestHandler) {
             return true;
         }
@@ -54,14 +55,14 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
             if (user == null) {
                 response.setStatus(HttpStatus.SC_UNAUTHORIZED);
                 logger.info("user does not exist");
-                return false;
+                return true;
             }
         } else {
             user = userMapper.queryUserByToken(token);
             if (user == null) {
                 response.setStatus(HttpStatus.SC_UNAUTHORIZED);
                 logger.info("user token has expired");
-                return false;
+                return true;
             }
         }
         request.getSession().setAttribute(Constants.SESSION_USER, user);
