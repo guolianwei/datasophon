@@ -13,6 +13,7 @@
         <module>datasophon-dao</module>
         <module>datasophon-common</module>
         <module>datasophon-worker</module>
+        <module>datasophon-page</module>
     </modules>
 
     <properties>

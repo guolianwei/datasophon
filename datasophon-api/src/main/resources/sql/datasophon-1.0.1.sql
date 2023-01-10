@@ -542,9 +542,22 @@ CREATE TABLE `t_ddh_cluster_info`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `t_ddh_cluster_node_label`;
 CREATE TABLE `t_ddh_cluster_node_label`  (
-  `id` int(10) NOT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `cluster_id` int(10) NULL DEFAULT NULL,
   `node_label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
+
+
+DROP TABLE IF EXISTS `t_ddh_cluster_queue_capacity`;
+CREATE TABLE `t_ddh_cluster_queue_capacity`  (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `cluster_id` int(10) NULL DEFAULT NULL,
+  `queue_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `capacity` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `node_label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `acl_users` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `parent` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
 
@@ -559,7 +572,7 @@ DROP TABLE IF EXISTS `t_ddh_cluster_rack`;
 CREATE TABLE `t_ddh_cluster_rack`  (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `rack` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `clusterId` int(10) NULL DEFAULT NULL,
+  `cluster_id` int(10) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
 
@@ -853,6 +866,15 @@ CREATE TABLE `t_ddh_cluster_yarn_queue`  (
   `create_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
+
+
+DROP TABLE IF EXISTS `t_ddh_cluster_yarn_scheduler`;
+CREATE TABLE `t_ddh_cluster_yarn_scheduler`  (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `cluster_id` int(10) NULL DEFAULT NULL,
+  `scheduler` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'fifo ,fair ,drf',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
 
 -- ----------------------------
 -- Records of t_ddh_cluster_yarn_queue

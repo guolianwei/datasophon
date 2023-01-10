@@ -79,6 +79,7 @@ public class AppConfiguration implements WebMvcConfigurer {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    registry.addResourceHandler("/**").addResourceLocations("classpath:/");
     registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
     registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
     //registry.addResourceHandler("swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
