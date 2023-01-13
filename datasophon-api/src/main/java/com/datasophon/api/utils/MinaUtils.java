@@ -1,6 +1,7 @@
 package com.datasophon.api.utils;
 
 import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.auth.password.PasswordIdentityProvider;
 import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
@@ -32,12 +33,14 @@ public class MinaUtils {
         ClientSession session = null;
         try {
             session = sshClient.connect(sshUser, sshHost, sshPort).verify().getClientSession();
-            session.addPublicKeyIdentity(getKeyPairFromString(privateKey));
+//            session.setPasswordIdentityProvider(PasswordIdentityProvider.wrapPasswords("111111"));
+            session.addPasswordIdentity("1");
+//            session.addPublicKeyIdentity(getKeyPairFromString(privateKey));
             if (session.auth().verify().isFailure()) {
                 LOG.info("验证失败");
                 return null;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         LOG.info(sshHost + " 连接成功");

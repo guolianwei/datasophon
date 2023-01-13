@@ -15,19 +15,29 @@ public class UploadWorkerHandler implements DispatcherWorkerHandler {
 
     @Override
     public boolean handle(ClientSession session, HostInfo hostInfo) {
-        boolean uploadFile = MinaUtils.uploadFile(session,
-                Constants.INSTALL_PATH,
-                Constants.MASTER_MANAGE_PACKAGE_PATH +
-                        Constants.SLASH +
-                        Constants.WORKER_PACKAGE_NAME);
-        if(uploadFile){
+        String workerTarFilePath = fetchWorkTar();
+        boolean uploadFile = MinaUtils.uploadFile(session, Constants.INSTALL_PATH,
+                workerTarFilePath);
+        if (uploadFile) {
             hostInfo.setMessage("分发成功，开始校验md5");
             hostInfo.setProgress(25);
-        }else{
+        } else {
             hostInfo.setMessage("分发主机管理agent安装包失败");
             hostInfo.setErrMsg("dispatcher host agent to " + hostInfo.getHostname() + " failed");
             CommonUtils.updateInstallState(InstallState.FAILED, hostInfo);
         }
         return uploadFile;
+    }
+
+    private static String fetchWorkTar() {
+        String workerTarFilePathFromSystemD = System.getProperty(Constants.SYSPRO_NAME_WORKER_TAR_FILEPATH);
+        if (workerTarFilePathFromSystemD != null && !workerTarFilePathFromSystemD.trim().equals("")) {
+            return workerTarFilePathFromSystemD;
+        }
+        String workerTarFilePath =
+                Constants.MASTER_MANAGE_PACKAGE_PATH +
+                        Constants.SLASH +
+                        Constants.WORKER_PACKAGE_NAME;
+        return workerTarFilePath;
     }
 }

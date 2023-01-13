@@ -16,6 +16,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import static com.datasophon.common.utils.HostUtils.fetchHostName;
+
 public class StartWorkerHandler implements DispatcherWorkerHandler{
 
     private static final Logger logger = LoggerFactory.getLogger(StartWorkerHandler.class);
@@ -33,7 +35,7 @@ public class StartWorkerHandler implements DispatcherWorkerHandler{
     public boolean handle(ClientSession session, HostInfo hostInfo) throws UnknownHostException {
         ConfigBean configBean = SpringTool.getApplicationContext().getBean(ConfigBean.class);
         String installPath = Constants.INSTALL_PATH;
-        String localHostName = InetAddress.getLocalHost().getHostName();
+        String localHostName =fetchHostName();
         String updateCommonPropertiesResult = MinaUtils.execCmdWithResult(session,
                 Constants.UPDATE_COMMON_CMD +
                         localHostName +

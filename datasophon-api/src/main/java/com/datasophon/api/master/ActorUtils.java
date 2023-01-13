@@ -20,6 +20,8 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static com.datasophon.common.utils.HostUtils.fetchHostName;
+
 public class ActorUtils {
     private static final Logger logger = LoggerFactory.getLogger(ActorUtils.class);
 
@@ -29,7 +31,7 @@ public class ActorUtils {
     }
 
     public static void init() throws UnknownHostException {
-        String hostname = InetAddress.getLocalHost().getHostName();
+        String hostname = fetchHostName();
         Config config = ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname);
         actorSystem = ActorSystem.create("datasophon", config.withFallback(ConfigFactory.load()));
         actorSystem.actorOf(Props.create(MasterServer.class), "master");

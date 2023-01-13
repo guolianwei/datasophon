@@ -7,20 +7,23 @@ import com.datasophon.common.Constants;
 import com.datasophon.common.cache.CacheUtils;
 import com.google.common.net.InetAddresses;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import static com.datasophon.common.Constants.OSNAME_PROPERTIES;
-import static com.datasophon.common.Constants.OSNAME_WINDOWS;
-import static com.datasophon.common.Constants.WINDOWS_HOST_DIR;
+
+import static com.datasophon.common.Constants.*;
 
 /**
  * 读取hosts文件
  *
  * @author gaodayu
  */
-public enum HostUtils {;
+public enum HostUtils {
+    ;
 
     private static String HOSTS_PATH = "/etc/hosts";
 
@@ -69,11 +72,13 @@ public enum HostUtils {;
 
     private static List<String> parse2List() {
         String osName = System.getProperty(OSNAME_PROPERTIES);
-        if (osName.startsWith(OSNAME_WINDOWS)){
-            HOSTS_PATH = WINDOWS_HOST_DIR + HOSTS_PATH;
+        if (osName.startsWith(OSNAME_WINDOWS)) {
+            if (WINDOWS_HOST_DIR.equals("C:/Windows/System32/drivers")) {
+                HOSTS_PATH = WINDOWS_HOST_DIR + File.separator + "etc/hosts";
+            }
         }
         if (!FileUtil.exist(HOSTS_PATH)) {
-            throw new RuntimeException("File /etc/hosts not found：" + HOSTS_PATH);
+            throw new RuntimeException(String.format("File hosts not found：%s" , HOSTS_PATH));
         }
 
         List<String> lines = Arrays.stream(new FileReader(HOSTS_PATH).readString().split(ENDL))
@@ -115,7 +120,7 @@ public enum HostUtils {;
             int splitLength = split.length;
             checkLine(splitLength, line);
 
-            if(Objects.equals(split[split.length - 1], hostname)) {
+            if (Objects.equals(split[split.length - 1], hostname)) {
                 ip = split[0];
                 break;
             }
@@ -123,5 +128,11 @@ public enum HostUtils {;
 
         return ip;
     }
-
+    public static String fetchHostName() throws UnknownHostException {
+        String hostNameFromSysPro = System.getProperty(SYSPRO_NAME_HOSTNAME);
+        if (hostNameFromSysPro != null && !hostNameFromSysPro.trim().equals("")) {
+            return hostNameFromSysPro;
+        }
+        return InetAddress.getLocalHost().getHostName();
+    }
 }

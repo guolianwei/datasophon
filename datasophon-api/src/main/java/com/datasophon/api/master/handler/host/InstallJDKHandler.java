@@ -15,26 +15,30 @@ public class InstallJDKHandler implements DispatcherWorkerHandler {
     @Override
     public boolean handle(ClientSession session, HostInfo hostInfo) {
         hostInfo.setProgress(60);
-        String arch = MinaUtils.execCmdWithResult(session,"arch");
-        String testResult = MinaUtils.execCmdWithResult(session,"test -d /usr/local/jdk1.8.0_333");
+        String arch = MinaUtils.execCmdWithResult(session, "arch");
+        String testResult = MinaUtils.execCmdWithResult(session, "test -d /usr/local/jdk1.8.0_333");
         boolean exists = true;
         if (StringUtils.isNotBlank(testResult) && "failed".equals(testResult)) {
             exists = false;
         }
-        if ("x86_64".equals(arch)) {
-            if (!exists) {
-                hostInfo.setMessage("开始安装jdk");
-                MinaUtils.uploadFile(session,"/usr/local", Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + Constants.X86JDK);
-                MinaUtils.execCmdWithResult(session,"tar -zxvf /usr/local/jdk-8u333-linux-x64.tar.gz -C /usr/local/");
-            }
-        }
-        if ("aarch64".equals(arch)) {
-            if (!exists) {
-                hostInfo.setMessage("开始安装jdk");
-                MinaUtils.uploadFile(session,"/usr/local", Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + Constants.ARMJDK);
-                MinaUtils.execCmdWithResult(session,"tar -zxvf /usr/local/jdk-8u333-linux-aarch64.tar.gz -C /usr/local/");
-            }
+        String jdkTarPath = fetchJdkTar(arch);
+        if (!exists) {
+            hostInfo.setMessage("开始安装jdk");
+            MinaUtils.uploadFile(session, "/usr/local", jdkTarPath);
+            MinaUtils.execCmdWithResult(session, "tar -zxvf /usr/local/jdk-8u333-linux-x64.tar.gz -C /usr/local/");
         }
         return true;
+    }
+
+    private static String fetchJdkTar(String arch) {
+        String jdkTarFromSysPro = System.getProperty(Constants.SYSPRO_NAME_JDK_TAR_FILEPATH);
+        if (jdkTarFromSysPro != null && !jdkTarFromSysPro.trim().equals("")) {
+            return jdkTarFromSysPro;
+        }
+        String jdkTarPath = Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + Constants.X86JDK;
+        if ("aarch64".equals(arch)) {
+            jdkTarPath = Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + Constants.ARMJDK;
+        }
+        return jdkTarPath;
     }
 }

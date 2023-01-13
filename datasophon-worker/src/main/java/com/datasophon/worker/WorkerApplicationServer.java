@@ -29,13 +29,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import static com.datasophon.common.utils.HostUtils.fetchHostName;
+
 public class WorkerApplicationServer {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkerApplicationServer.class);
 
     public static void main(String[] args) throws UnknownHostException, NotCompliantMBeanException, InstanceAlreadyExistsException, MBeanRegistrationException, MalformedObjectNameException {
         //启动actorsystem
-        String hostname = InetAddress.getLocalHost().getHostName();
+        String hostname = fetchHostName();
         CacheUtils.put("hostname",hostname);
         Config config = ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname);
         ActorSystem system = ActorSystem.create("datasophon", config.withFallback(ConfigFactory.load()));

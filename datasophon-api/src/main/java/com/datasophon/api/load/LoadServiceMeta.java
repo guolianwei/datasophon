@@ -32,6 +32,8 @@ import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.datasophon.common.utils.HostUtils.fetchHostName;
+
 @Component
 public class LoadServiceMeta implements ApplicationRunner {
 
@@ -209,7 +211,7 @@ public class LoadServiceMeta implements ApplicationRunner {
                 for (ClusterVariable variable : variables) {
                     globalVariables.put(variable.getVariableName(), variable.getVariableValue());
                 }
-                globalVariables.put("${apiHost}", InetAddress.getLocalHost().getHostName());
+                globalVariables.put("${apiHost}", fetchHostName());
                 globalVariables.put("${apiPort}", configBean.getServerPort());
                 globalVariables.put("${INSTALL_PATH}", Constants.INSTALL_PATH);
                 CacheUtils.put("globalVariables" + Constants.UNDERLINE + cluster.getId(), globalVariables);
