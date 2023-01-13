@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
+import static com.datasophon.common.utils.PathUtils.fetchMasterManagePackagePath;
+
 @Service("serviceInstallService")
 @Transactional
 public class ServiceInstallServiceImpl implements ServiceInstallService {
@@ -240,7 +242,7 @@ public class ServiceInstallServiceImpl implements ServiceInstallService {
             String configJson = JSONObject.toJSONString(list);
             String newMd5 = SecureUtil.md5(configJson);
             //新增版本配置,zk配置改变不新增角色组
-            if("zookeeper".equals(serviceName.toLowerCase())){
+            if ("zookeeper".equals(serviceName.toLowerCase())) {
                 roleGroupId = roleGroupConfig.getId();
             }
 
@@ -373,7 +375,7 @@ public class ServiceInstallServiceImpl implements ServiceInstallService {
             List<ServiceRoleInfo> elseRoles = new ArrayList<>();
             ServiceNode serviceNode = new ServiceNode();
             String serviceKey = clusterInfo.getClusterFrame() + Constants.UNDERLINE + command.getServiceName();
-            ServiceInfo serviceInfo =  ServiceInfoMap.get(serviceKey);
+            ServiceInfo serviceInfo = ServiceInfoMap.get(serviceKey);
             for (ClusterServiceCommandHostCommandEntity hostCommand : commandHostList) {
                 String key = clusterInfo.getClusterFrame() + Constants.UNDERLINE + command.getServiceName() + Constants.UNDERLINE + hostCommand.getServiceRoleName();
                 ServiceRoleInfo serviceRoleInfo = ServiceRoleMap.get(key);
@@ -404,7 +406,7 @@ public class ServiceInstallServiceImpl implements ServiceInstallService {
         FileInputStream inputStream = null;
         OutputStream out = null;
         //通过文件路径获得File对象
-        File file = new File(Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + packageName);
+        File file = new File(fetchMasterManagePackagePath() + File.separator + packageName);
 
         inputStream = new FileInputStream(file);
 

@@ -203,6 +203,7 @@ public final class Constants {
      */
     public static final String WINDOWS_HOST_DIR = "C:/Windows/System32/drivers";
     public static final String SYSPRO_NAME_WORKER_TAR_FILEPATH = "workerTarFilePath";
+    public static final String SYSPRO_NAME_MASTER_MANAGE_PACKAGE_PATH = "masterManagePackagePath";
     public static final String SYSPRO_NAME_JDK_TAR_FILEPATH = "jdkTarFilePath";
     public static final String SYSPRO_NAME_CEHCK_TAR_MD5_SWITCH = "checkTarMd5Switch ";
     public static final String SYSPRO_NAME_HOSTNAME = "hostName";

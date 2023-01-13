@@ -8,6 +8,10 @@ import org.apache.sshd.client.session.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
+import static com.datasophon.common.utils.PathUtils.fetchMasterManagePackagePath;
+
 public class InstallJDKHandler implements DispatcherWorkerHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(InstallJDKHandler.class);
@@ -35,9 +39,9 @@ public class InstallJDKHandler implements DispatcherWorkerHandler {
         if (jdkTarFromSysPro != null && !jdkTarFromSysPro.trim().equals("")) {
             return jdkTarFromSysPro;
         }
-        String jdkTarPath = Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + Constants.X86JDK;
+        String jdkTarPath = fetchMasterManagePackagePath() + File.separator + Constants.X86JDK;
         if ("aarch64".equals(arch)) {
-            jdkTarPath = Constants.MASTER_MANAGE_PACKAGE_PATH + Constants.SLASH + Constants.ARMJDK;
+            jdkTarPath = fetchMasterManagePackagePath() + File.separator + Constants.ARMJDK;
         }
         return jdkTarPath;
     }

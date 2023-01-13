@@ -9,6 +9,10 @@ import org.apache.sshd.client.session.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
+import static com.datasophon.common.utils.PathUtils.fetchMasterManagePackagePath;
+
 public class UploadWorkerHandler implements DispatcherWorkerHandler {
     private static final Logger logger = LoggerFactory.getLogger(StartWorkerHandler.class);
 
@@ -35,8 +39,8 @@ public class UploadWorkerHandler implements DispatcherWorkerHandler {
             return workerTarFilePathFromSystemD;
         }
         String workerTarFilePath =
-                Constants.MASTER_MANAGE_PACKAGE_PATH +
-                        Constants.SLASH +
+                fetchMasterManagePackagePath() +
+                        File.separator +
                         Constants.WORKER_PACKAGE_NAME;
         return workerTarFilePath;
     }

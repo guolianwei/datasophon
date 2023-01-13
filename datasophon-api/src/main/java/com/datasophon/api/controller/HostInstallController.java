@@ -38,7 +38,8 @@ public class HostInstallController {
                                    @RequestParam @NotNull(message = "SSH端口必填") @Min(value = 1, message = "非法的SSH端口") @Max(value = 65535, message = "非法的SSH端口") Integer sshPort,
                                    @RequestParam Integer page,
                                    @RequestParam Integer pageSize) {
-        return installService.analysisHostList(clusterId, hosts, sshUser, sshPort, page, pageSize);
+        Result result = installService.analysisHostList(clusterId, hosts, sshUser, sshPort, page, pageSize);
+        return result;
     }
 
     /**

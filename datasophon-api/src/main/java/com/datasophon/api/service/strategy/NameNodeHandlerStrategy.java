@@ -12,6 +12,7 @@ import com.datasophon.common.model.ServiceConfig;
 import com.datasophon.dao.entity.ClusterInfoEntity;
 import com.datasophon.dao.entity.FrameServiceEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,13 +35,18 @@ public class NameNodeHandlerStrategy implements ServiceRoleStrategy {
     @Override
     public void handlerConfig(Integer clusterId, List<ServiceConfig> list) {
         ClusterInfoEntity clusterInfo = ProcessUtils.getClusterInfo(clusterId);
+        List<ServiceConfig> listForIter = new ArrayList<>();
         for (ServiceConfig config : list) {
-            if ("enableRack".equals(config.getName()) && (Boolean)config.getValue()) {
-                ServiceConfig serviceConfig = ProcessUtils.createServiceConfig("net.topology.table.file.name",Constants.INSTALL_PATH +
+            listForIter.add(config);
+        }
+
+        for (ServiceConfig config : listForIter) {
+            if ("enableRack".equals(config.getName()) && (Boolean) config.getValue()) {
+                ServiceConfig serviceConfig = ProcessUtils.createServiceConfig("net.topology.table.file.name", Constants.INSTALL_PATH +
                         Constants.SLASH +
-                        PackageUtils.getServiceDcPackageName(clusterInfo.getClusterFrame(), "HDFS")+
-                        "/etc/hadoop/rack.properties","input");
-                ServiceConfig mapImplConfig = ProcessUtils.createServiceConfig("net.topology.node.switch.mapping.impl", "org.apache.hadoop.net.TableMapping","input");
+                        PackageUtils.getServiceDcPackageName(clusterInfo.getClusterFrame(), "HDFS") +
+                        "/etc/hadoop/rack.properties", "input");
+                ServiceConfig mapImplConfig = ProcessUtils.createServiceConfig("net.topology.node.switch.mapping.impl", "org.apache.hadoop.net.TableMapping", "input");
                 list.add(serviceConfig);
                 list.add(mapImplConfig);
             }

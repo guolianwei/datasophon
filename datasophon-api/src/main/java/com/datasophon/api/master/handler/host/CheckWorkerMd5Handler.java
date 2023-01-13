@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.text.StyledEditorKit;
+import java.io.File;
 import java.nio.charset.Charset;
+
+import static com.datasophon.common.utils.PathUtils.fetchMasterManagePackagePath;
 
 public class CheckWorkerMd5Handler implements DispatcherWorkerHandler {
     private static final Logger logger = LoggerFactory.getLogger(CheckWorkerMd5Handler.class);
@@ -28,8 +31,8 @@ public class CheckWorkerMd5Handler implements DispatcherWorkerHandler {
     private static boolean chenckMd5(ClientSession session, HostInfo hostInfo) {
         String checkWorkerMd5Result = MinaUtils.execCmdWithResult(session, Constants.CHECK_WORKER_MD5_CMD).trim();
         String md5 = FileUtil.readString(
-                Constants.MASTER_MANAGE_PACKAGE_PATH +
-                        Constants.SLASH +
+                fetchMasterManagePackagePath() +
+                        File.separator +
                         Constants.WORKER_PACKAGE_NAME + ".md5",
                 Charset.defaultCharset()).trim();
         logger.info("{} worker package md5 value is : {}", hostInfo.getHostname(), md5);
