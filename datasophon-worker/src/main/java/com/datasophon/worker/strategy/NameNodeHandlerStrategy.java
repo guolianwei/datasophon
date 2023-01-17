@@ -24,55 +24,71 @@ public class NameNodeHandlerStrategy implements ServiceRoleStrategy {
         if (command.getCommandType().equals(CommandType.INSTALL_SERVICE)) {
             if (command.isSlave()) {
                 //执行hdfs namenode -bootstrapStandby
-                logger.info("start to execute hdfs namenode -bootstrapStandby");
-                ArrayList<String> commands = new ArrayList<>();
-                commands.add(workPath + "/bin/hdfs");
-                commands.add("namenode");
-                commands.add("-bootstrapStandby");
-                ExecResult execResult = ShellUtils.execWithStatus(workPath, commands, 30L);
-                if (execResult.getExecResult()) {
-                    logger.info("namenode standby success");
-                    startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
-                } else {
-                    logger.info("namenode standby failed");
-                }
+                startResult = bootstrapStandby(command, startResult, serviceHandler, workPath);
             } else {
-                logger.info("start to execute format namenode");
-                ArrayList<String> commands = new ArrayList<>();
-                commands.add(workPath + "/bin/hdfs");
-                commands.add("namenode");
-                commands.add("-format");
-                commands.add("smhadoop");
-                //清空namenode元数据
-                FileUtil.del("/data/dfs/nn/current");
-                ExecResult execResult = ShellUtils.execWithStatus(workPath, commands, 180L);
-                if (execResult.getExecResult()) {
-                    logger.info("namenode format success");
-                    startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
-                } else {
-                    logger.info("namenode format failed");
-                }
+                startResult = namenodeFormat(command, startResult, serviceHandler, workPath);
             }
         } else if (command.getEnableRangerPlugin()) {
-            logger.info("start to enable ranger hdfs plugin");
-            ArrayList<String> commands = new ArrayList<>();
-            commands.add("sh");
-            commands.add(workPath + "/ranger-hdfs-plugin/enable-hdfs-plugin.sh");
-            if (!FileUtil.exist(workPath + "/ranger-hdfs-plugin/success.id")) {
-                ExecResult execResult = ShellUtils.execWithStatus(workPath + "/ranger-hdfs-plugin", commands, 30L);
-                if (execResult.getExecResult()) {
-                    logger.info("enable ranger hdfs plugin success");
-                    //写入ranger plugin集成成功标识
-                    FileUtil.writeUtf8String("success", workPath + "/ranger-hdfs-plugin/success.id");
-                    startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
-                } else {
-                    logger.info("enable ranger hdfs plugin failed");
-                }
-            } else {
+            startResult = enableRangerPlugin(command, startResult, serviceHandler, workPath);
+        } else {
+            startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(),
+                    command.getDecompressPackageName(), command.getRunAs());
+        }
+        return startResult;
+    }
+
+    private static ExecResult enableRangerPlugin(ServiceRoleOperateCommand command, ExecResult startResult, ServiceHandler serviceHandler, String workPath) {
+        logger.info("start to enable ranger hdfs plugin");
+        ArrayList<String> commands = new ArrayList<>();
+        commands.add("sh");
+        commands.add(workPath + "/ranger-hdfs-plugin/enable-hdfs-plugin.sh");
+        if (!FileUtil.exist(workPath + "/ranger-hdfs-plugin/success.id")) {
+            ExecResult execResult = ShellUtils.execWithStatus(workPath + "/ranger-hdfs-plugin", commands, 30L);
+            if (execResult.getExecResult()) {
+                logger.info("enable ranger hdfs plugin success");
+                //写入ranger plugin集成成功标识
+                FileUtil.writeUtf8String("success", workPath + "/ranger-hdfs-plugin/success.id");
                 startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
+            } else {
+                logger.info("enable ranger hdfs plugin failed");
             }
         } else {
             startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
+        }
+        return startResult;
+    }
+
+    private static ExecResult namenodeFormat(ServiceRoleOperateCommand command, ExecResult startResult, ServiceHandler serviceHandler, String workPath) {
+        logger.info("start to execute format namenode");
+        ArrayList<String> commands = new ArrayList<>();
+        commands.add(workPath + "/bin/hdfs");
+        commands.add("namenode");
+        commands.add("-format");
+        commands.add("smhadoop");
+        //清空namenode元数据
+        FileUtil.del("/data/dfs/nn/current");
+        ExecResult execResult = ShellUtils.execWithStatus(workPath, commands, 180L);
+        if (execResult.getExecResult()) {
+            logger.info("namenode format success");
+            startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
+        } else {
+            logger.info("namenode format failed");
+        }
+        return startResult;
+    }
+
+    private static ExecResult bootstrapStandby(ServiceRoleOperateCommand command, ExecResult startResult, ServiceHandler serviceHandler, String workPath) {
+        logger.info("start to execute hdfs namenode -bootstrapStandby");
+        ArrayList<String> commands = new ArrayList<>();
+        commands.add(workPath + "/bin/hdfs");
+        commands.add("namenode");
+        commands.add("-bootstrapStandby");
+        ExecResult execResult = ShellUtils.execWithStatus(workPath, commands, 30L);
+        if (execResult.getExecResult()) {
+            logger.info("namenode standby success");
+            startResult = serviceHandler.start(command.getStartRunner(), command.getStatusRunner(), command.getDecompressPackageName(), command.getRunAs());
+        } else {
+            logger.info("namenode standby failed");
         }
         return startResult;
     }

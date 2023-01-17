@@ -387,7 +387,7 @@ public class ProcessUtils {
         List<FrameServiceEntity> frameServiceList = frameServiceService.getAllFrameServiceByFrameCode(clusterInfo.getClusterFrame());
         for (FrameServiceEntity frameServiceEntity : frameServiceList) {
             //创建服务actor
-            logger.info("create {} actor", clusterInfo.getClusterCode() + "-serviceActor-" + frameServiceEntity.getServiceName());
+            logger.info("create {} actor.", clusterInfo.getClusterCode() + "-serviceActor-" + frameServiceEntity.getServiceName());
             ActorUtils.actorSystem.actorOf(Props.create(MasterServiceActor.class)
                     .withDispatcher("my-forkjoin-dispatcher"), clusterInfo.getClusterCode() + "-serviceActor-" + frameServiceEntity.getServiceName());
         }

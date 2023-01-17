@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 集群服务角色对应web ui表 
@@ -36,5 +35,4 @@ public class ClusterServiceRoleInstanceWebuis implements Serializable {
 	private Integer serviceInstanceId;
 
 	private String name;
-
 }
