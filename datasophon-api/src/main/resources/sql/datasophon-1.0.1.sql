@@ -20,7 +20,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'datasophon'@'%';
 FLUSH PRIVILEGES;
 
 
-
+use datasophon;
 -- ----------------------------
 -- Table structure for t_ddh_access_token
 -- ----------------------------
