@@ -337,7 +337,7 @@
       "configType": "ha",
       "required": false,
       "type": "switch",
-      "value":"",
+      "value":"true",
       "configurableInWizard": true,
       "hidden": true,
       "defaultValue": true

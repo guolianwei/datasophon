@@ -400,7 +400,7 @@
       "configType": "ha",
       "required": true,
       "type": "switch",
-      "value":"",
+      "value":"true",
       "configurableInWizard": true,
       "hidden": true,
       "defaultValue": false
