@@ -23,7 +23,9 @@ public class CheckWorkerMd5Handler implements DispatcherWorkerHandler {
     public boolean handle(ClientSession session, HostInfo hostInfo) {
         String checkTarMd5Switch = System.getProperty(Constants.SYSPRO_NAME_CEHCK_TAR_MD5_SWITCH);
         if (checkTarMd5Switch != null && Boolean.valueOf(checkTarMd5Switch)) {
-            if (chenckMd5(session, hostInfo)) return false;
+            if (chenckMd5(session, hostInfo)) {
+                return false;
+            }
         }
         return true;
     }
