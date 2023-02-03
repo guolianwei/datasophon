@@ -14,8 +14,8 @@
  Date: 03/11/2022 17:57:56
 */
 
+drop database datasophon;
 CREATE DATABASE IF NOT EXISTS datasophon DEFAULT CHARACTER SET utf8;
-grant all privileges on *.* to datasophon@"%" identified by 'datasophon' with grant option;
 GRANT ALL PRIVILEGES ON *.* TO 'datasophon'@'%';
 FLUSH PRIVILEGES;
 

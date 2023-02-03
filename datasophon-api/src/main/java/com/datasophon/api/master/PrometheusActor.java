@@ -53,7 +53,7 @@ public class PrometheusActor extends UntypedActor {
 
             ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, command.getClusterId());
 
-            logger.info("start to genetate {} prometheus config",serviceInstance.getServiceName());
+            logger.info("start to generate {} prometheus config", serviceInstance.getServiceName());
             HashMap<Generators, List<ServiceConfig>> configFileMap = new HashMap<>();
 
             HashMap<String, List<String>> roleMap = new HashMap<>();
@@ -95,11 +95,11 @@ public class PrometheusActor extends UntypedActor {
             serviceRoleInfo.setHostname(prometheusInstance.getHostname());
             ServiceConfigureHandler configureHandler = new ServiceConfigureHandler();
             ExecResult execResult = configureHandler.handlerRequest(serviceRoleInfo);
-            if(execResult.getExecResult()){
+            if (execResult.getExecResult()) {
                 //重新加载prometheus配置
-                HttpUtil.post("http://"+prometheusInstance.getHostname()+":9090/-/reload","");
+                HttpUtil.post("http://" + prometheusInstance.getHostname() + ":9090/-/reload", "");
             }
-        }else if(msg instanceof GenerateHostPrometheusConfig){
+        } else if (msg instanceof GenerateHostPrometheusConfig) {
             GenerateHostPrometheusConfig command = (GenerateHostPrometheusConfig) msg;
             Integer clusterId = command.getClusterId();
             HashMap<Generators, List<ServiceConfig>> configFileMap = new HashMap<>();
@@ -107,9 +107,12 @@ public class PrometheusActor extends UntypedActor {
             ClusterServiceRoleInstanceService roleInstanceService = SpringTool.getApplicationContext().getBean(ClusterServiceRoleInstanceService.class);
             List<ClusterHostEntity> hostList = hostService.list(new QueryWrapper<ClusterHostEntity>()
                     .eq(Constants.MANAGED, 1)
-                    .eq(Constants.CLUSTER_ID,clusterId));
-            ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, command.getClusterId());
-
+                    .eq(Constants.CLUSTER_ID, clusterId));
+            ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, clusterId);
+            if (prometheusInstance == null) {
+                logger.error("Not found prometheus instance in cluster:{}  ", clusterId);
+                return;
+            }
             Generators workerGenerators = new Generators();
             workerGenerators.setFilename("worker.json");
             workerGenerators.setOutputDirectory("configs");
@@ -125,32 +128,36 @@ public class PrometheusActor extends UntypedActor {
             ArrayList<ServiceConfig> nodeServiceConfigs = new ArrayList<>();
             for (ClusterHostEntity clusterHostEntity : hostList) {
                 ServiceConfig serviceConfig = new ServiceConfig();
-                serviceConfig.setName("worker_"+clusterHostEntity.getHostname());
-                serviceConfig.setValue(clusterHostEntity.getHostname()+":8585");
+                serviceConfig.setName("worker_" + clusterHostEntity.getHostname());
+                serviceConfig.setValue(clusterHostEntity.getHostname() + ":8585");
                 serviceConfig.setRequired(true);
                 workerServiceConfigs.add(serviceConfig);
 
                 ServiceConfig nodeServiceConfig = new ServiceConfig();
-                nodeServiceConfig.setName("node_"+clusterHostEntity.getHostname());
-                nodeServiceConfig.setValue(clusterHostEntity.getHostname()+":9100");
+                nodeServiceConfig.setName("node_" + clusterHostEntity.getHostname());
+                nodeServiceConfig.setValue(clusterHostEntity.getHostname() + ":9100");
                 nodeServiceConfig.setRequired(true);
                 nodeServiceConfigs.add(nodeServiceConfig);
             }
-            configFileMap.put(workerGenerators,workerServiceConfigs);
-            configFileMap.put(nodeGenerators,nodeServiceConfigs);
+            configFileMap.put(workerGenerators, workerServiceConfigs);
+            configFileMap.put(nodeGenerators, nodeServiceConfigs);
             ServiceRoleInfo serviceRoleInfo = new ServiceRoleInfo();
             serviceRoleInfo.setName("Prometheus");
             serviceRoleInfo.setParentName("PROMETHEUS");
             serviceRoleInfo.setConfigFileMap(configFileMap);
             serviceRoleInfo.setDecompressPackageName("prometheus-2.17.2");
-            serviceRoleInfo.setHostname(prometheusInstance.getHostname());
+            if (prometheusInstance != null && prometheusInstance.getHostname() != null) {
+                serviceRoleInfo.setHostname(prometheusInstance.getHostname());
+            } else {
+                throw new Exception("未设置hostname");
+            }
             ServiceConfigureHandler configureHandler = new ServiceConfigureHandler();
             ExecResult execResult = configureHandler.handlerRequest(serviceRoleInfo);
-            if(execResult.getExecResult()){
+            if (execResult.getExecResult()) {
                 //重新加载prometheus配置
-                HttpUtil.post("http://"+prometheusInstance.getHostname()+":9090/-/reload","");
+                HttpUtil.post("http://" + prometheusInstance.getHostname() + ":9090/-/reload", "");
             }
-        }else if(msg instanceof GenerateAlertConfigCommand){
+        } else if (msg instanceof GenerateAlertConfigCommand) {
 
             GenerateAlertConfigCommand command = (GenerateAlertConfigCommand) msg;
             ClusterServiceRoleInstanceService roleInstanceService = SpringTool.getApplicationContext().getBean(ClusterServiceRoleInstanceService.class);
@@ -160,11 +167,11 @@ public class PrometheusActor extends UntypedActor {
             Timeout timeout = new Timeout(Duration.create(180, TimeUnit.SECONDS));
             Future<Object> configureFuture = Patterns.ask(alertConfigActor, command, timeout);
             ExecResult configResult = (ExecResult) Await.result(configureFuture, timeout.duration());
-            if(configResult.getExecResult()){
+            if (configResult.getExecResult()) {
                 //重新加载prometheus配置
-                HttpUtil.post("http://"+prometheusInstance.getHostname()+":9090/-/reload","");
+                HttpUtil.post("http://" + prometheusInstance.getHostname() + ":9090/-/reload", "");
             }
-        }else if(msg instanceof GenerateSRPromConfigCommand){
+        } else if (msg instanceof GenerateSRPromConfigCommand) {
             GenerateSRPromConfigCommand command = (GenerateSRPromConfigCommand) msg;
             ClusterServiceInstanceService serviceInstanceService = SpringTool.getApplicationContext().getBean(ClusterServiceInstanceService.class);
             ClusterServiceRoleInstanceService roleInstanceService = SpringTool.getApplicationContext().getBean(ClusterServiceRoleInstanceService.class);
@@ -173,7 +180,7 @@ public class PrometheusActor extends UntypedActor {
 
             ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, command.getClusterId());
 
-            logger.info("start to genetate {} prometheus config",serviceInstance.getServiceName());
+            logger.info("start to genetate {} prometheus config", serviceInstance.getServiceName());
             HashMap<Generators, List<ServiceConfig>> configFileMap = new HashMap<>();
 
 
@@ -181,8 +188,8 @@ public class PrometheusActor extends UntypedActor {
             ArrayList<String> beList = new ArrayList<>();
 
             for (ClusterServiceRoleInstanceEntity roleInstanceEntity : roleInstanceList) {
-                String jmxKey = command.getClusterFrame() + Constants.UNDERLINE + serviceInstance.getServiceName()+ Constants.UNDERLINE + roleInstanceEntity.getServiceRoleName();
-                logger.info("jmxKey is {}",jmxKey);
+                String jmxKey = command.getClusterFrame() + Constants.UNDERLINE + serviceInstance.getServiceName() + Constants.UNDERLINE + roleInstanceEntity.getServiceRoleName();
+                logger.info("jmxKey is {}", jmxKey);
                 if ("FE".equals(roleInstanceEntity.getServiceRoleName())) {
                     logger.info(ServiceRoleJmxMap.get(jmxKey));
                     feList.add(roleInstanceEntity.getHostname() + ":" + ServiceRoleJmxMap.get(jmxKey));
@@ -210,7 +217,7 @@ public class PrometheusActor extends UntypedActor {
             beServiceConfig.setRequired(true);
             serviceConfigs.add(feServiceConfig);
             serviceConfigs.add(beServiceConfig);
-            configFileMap.put(generators,serviceConfigs);
+            configFileMap.put(generators, serviceConfigs);
 
             ServiceRoleInfo serviceRoleInfo = new ServiceRoleInfo();
             serviceRoleInfo.setName("Prometheus");
@@ -220,13 +227,11 @@ public class PrometheusActor extends UntypedActor {
             serviceRoleInfo.setHostname(prometheusInstance.getHostname());
             ServiceConfigureHandler configureHandler = new ServiceConfigureHandler();
             ExecResult execResult = configureHandler.handlerRequest(serviceRoleInfo);
-            if(execResult.getExecResult()){
+            if (execResult.getExecResult()) {
                 //重新加载prometheus配置
-                HttpUtil.post("http://"+prometheusInstance.getHostname()+":9090/-/reload","");
+                HttpUtil.post("http://" + prometheusInstance.getHostname() + ":9090/-/reload", "");
             }
-        }
-
-        else {
+        } else {
             unhandled(msg);
         }
 
