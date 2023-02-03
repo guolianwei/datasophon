@@ -52,9 +52,8 @@ public class StartWorkerHandler implements DispatcherWorkerHandler {
             hostInfo.setMessage("配置文件修改失败");
             CommonUtils.updateInstallState(InstallState.FAILED, hostInfo);
         } else {
-            String hostNameSetterScript = String.format("hostnamectl set-hostname %s", agentHostName);
-            logger.info("Set hostName agent :{},script:{}", agentHostName, hostNameSetterScript);
-            MinaUtils.execCmdWithResult(session, hostNameSetterScript);
+            setHostName(session, agentHostName);
+            disableFirewalld(session, agentHostName);
             //设置开机自动启动
             MinaUtils.execCmdWithResult(session, "\\cp " + installPath + "/datasophon-worker/script/datasophon-worker /etc/rc.d/init.d/");
             MinaUtils.execCmdWithResult(session, "chmod +x /etc/rc.d/init.d/datasophon-worker");
@@ -69,5 +68,20 @@ public class StartWorkerHandler implements DispatcherWorkerHandler {
 
         logger.info("end dispatcher host agent :{}", agentHostName);
         return true;
+    }
+
+    private static void setHostName(ClientSession session, String agentHostName) {
+        String hostNameSetterScript = String.format("hostnamectl set-hostname %s", agentHostName);
+        logger.info("Set hostName agent :{},script:{}", agentHostName, hostNameSetterScript);
+        MinaUtils.execCmdWithResult(session, hostNameSetterScript);
+    }
+
+    private static void disableFirewalld(ClientSession session, String agentHostName) {
+        String disableFirewalld = "systemctl disable firewalld";
+        logger.info("Disable Firewalld agent :{},script:{}", agentHostName, disableFirewalld);
+        MinaUtils.execCmdWithResult(session, disableFirewalld);
+        String stopFirewalld = "systemctl stop firewalld";
+        logger.info("Stop Firewalld agent :{},script:{}", agentHostName, stopFirewalld);
+        MinaUtils.execCmdWithResult(session, stopFirewalld);
     }
 }

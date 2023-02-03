@@ -51,7 +51,8 @@ public class PrometheusActor extends UntypedActor {
             ClusterServiceInstanceEntity serviceInstance = serviceInstanceService.getById(command.getServiceInstanceId());
             List<ClusterServiceRoleInstanceEntity> roleInstanceList = roleInstanceService.getServiceRoleInstanceListByServiceId(serviceInstance.getId());
 
-            ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, command.getClusterId());
+            Integer clusterId = command.getClusterId();
+            ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, clusterId);
 
             logger.info("start to generate {} prometheus config", serviceInstance.getServiceName());
             HashMap<Generators, List<ServiceConfig>> configFileMap = new HashMap<>();
@@ -92,6 +93,10 @@ public class PrometheusActor extends UntypedActor {
             serviceRoleInfo.setParentName("PROMETHEUS");
             serviceRoleInfo.setConfigFileMap(configFileMap);
             serviceRoleInfo.setDecompressPackageName("prometheus-2.17.2");
+            if (prometheusInstance == null) {
+                logger.error("Not found prometheus instance in cluster:{}  ", clusterId);
+                return;
+            }
             serviceRoleInfo.setHostname(prometheusInstance.getHostname());
             ServiceConfigureHandler configureHandler = new ServiceConfigureHandler();
             ExecResult execResult = configureHandler.handlerRequest(serviceRoleInfo);
@@ -161,8 +166,12 @@ public class PrometheusActor extends UntypedActor {
 
             GenerateAlertConfigCommand command = (GenerateAlertConfigCommand) msg;
             ClusterServiceRoleInstanceService roleInstanceService = SpringTool.getApplicationContext().getBean(ClusterServiceRoleInstanceService.class);
-            ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, command.getClusterId());
-
+            Integer clusterId = command.getClusterId();
+            ClusterServiceRoleInstanceEntity prometheusInstance = roleInstanceService.getOneServiceRole("Prometheus", null, clusterId);
+            if (prometheusInstance == null) {
+                logger.error("Not found prometheus instance in cluster:{}  ", clusterId);
+                return;
+            }
             ActorSelection alertConfigActor = ActorUtils.actorSystem.actorSelection("akka.tcp://datasophon@" + prometheusInstance.getHostname() + ":2552/user/worker/alertConfigActor");
             Timeout timeout = new Timeout(Duration.create(180, TimeUnit.SECONDS));
             Future<Object> configureFuture = Patterns.ask(alertConfigActor, command, timeout);
